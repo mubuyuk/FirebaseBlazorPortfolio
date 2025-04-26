@@ -1,0 +1,40 @@
+﻿@page "/skills"
+@using MyPortfolio.Models
+@using MyPortfolio.Services
+@inject FirestoreService FirestoreService
+
+<h2 class="mt-4 mb-3">🛠 Mina tekniska kunskaper</h2>
+
+@if (skills == null)
+{
+    <p>Laddar skills...</p>
+}
+else if (!skills.Any())
+{
+    <p>Inga skills hittades i databasen.</p>
+}
+else
+{
+    @foreach (var categoryGroup in skills.GroupBy(s => s.Category))
+    {
+        <h3 class="mt-4">@categoryGroup.Key</h3>
+        <div class="skills-grid">
+            @foreach (var skill in categoryGroup)
+            {
+                <div class="skill-card">
+                    <img src="@skill.ImageUrl" alt="@skill.TechName" />
+                    <p>@skill.TechName</p>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<Skill>? skills;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await FirestoreService.GetSkillsAsync();
+    }
+}
