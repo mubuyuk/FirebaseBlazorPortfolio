@@ -1,7 +1,99 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject FirestoreService FirestoreService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Murat Buyuksal - Portfolio</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- HEADER -->
+<header class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Murat Buyuksal</h1>
+        <p class="lead">Software Developer | Azure Enthusiast | Azure DevOps</p>
 
-Welcome to your new app.
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="https://github.com/mubuyuk" class="btn btn-outline-light btn-sm" target="_blank" aria-label="GitHub" title="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/murat-buyuksal-1887a9302" class="btn btn-outline-light btn-sm" target="_blank" aria-label="LinkedIn" title="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:muratbuyuksal@gmail.com" class="btn btn-outline-light btn-sm" aria-label="Email" title="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- SKILLS -->
+@* <section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">🛠 Mina tekniska kunskaper</h2>
+
+        @if (skills == null)
+        {
+            <p class="text-center">Laddar skills...</p>
+        }
+        else if (!skills.Any())
+        {
+            <p class="text-center text-muted">Inga skills hittades i databasen.</p>
+        }
+        else
+        {
+            @foreach (var categoryGroup in skills.GroupBy(s => s.Category))
+            {
+                <h4 class="mt-5 mb-3">@categoryGroup.Key</h4>
+                <div class="row g-3">
+                    @foreach (var skill in categoryGroup)
+                    {
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <SkillCard Skill="skill" />
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</section> *@
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">📁 Mina projekt</h2>
+
+        @if (projects == null)
+        {
+            <p class="text-center">Laddar projekt...</p>
+        }
+        else if (!projects.Any())
+        {
+            <p class="text-center text-muted">Inga projekt hittades.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var project in projects)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <ProjectCard Project="project" />
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+
+@code {
+
+    private List<Project>? projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await FirestoreService.GetProjectsAsync();
+    }
+    // private List<Skill>? skills;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     skills = await FirestoreService.GetSkillsAsync();
+    // }
+}

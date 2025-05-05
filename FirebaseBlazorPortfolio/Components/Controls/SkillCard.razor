@@ -1,0 +1,13 @@
+﻿@using MyPortfolio.Models
+
+<div class="card text-center p-3 h-100 shadow-sm">
+    <img src="@Skill.ImageUrl" class="card-img-top mx-auto" style="width: 60px; height: 60px;" alt="@Skill.TechName" />
+    <div class="card-body">
+        <h6 class="card-title">@Skill.TechName</h6>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Skill Skill { get; set; } = default!;
+}
