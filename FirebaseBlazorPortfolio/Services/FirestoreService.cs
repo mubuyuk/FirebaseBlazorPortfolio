@@ -58,5 +58,22 @@ namespace MyPortfolio.Services
             var projectsRef = _firestoreDb.Collection("projects");
             await projectsRef.AddAsync(project);
         }
+
+        public async Task DeleteProjectAsync(Project project)
+        {
+            if (string.IsNullOrEmpty(project.Id)) return;
+
+            var docRef = _firestoreDb.Collection("projects").Document(project.Id);
+            await docRef.DeleteAsync();
+        }
+
+        public async Task UpdateProjectAsync(Project project)
+        {
+            if (string.IsNullOrEmpty(project.Id)) return;
+
+            var docRef = _firestoreDb.Collection("projects").Document(project.Id);
+            await docRef.SetAsync(project, SetOptions.Overwrite);
+        }
+
     }
 }

@@ -1,70 +1,148 @@
 ﻿@page "/admin"
-@inject FirestoreService FirestoreService
 @rendermode InteractiveServer
+@inject FirestoreService FirestoreService
 
-<h2 class="mb-4">🛠 Adminpanel: Lägg till nytt projekt</h2>
+<h2 class="mb-4">🎛 Adminpanel – Projekt</h2>
 
-<div class="mb-3">
-    <label class="form-label">Titel</label>
-    <input class="form-control" @bind="newProject.Title" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Beskrivning</label>
-    <textarea class="form-control" @bind="newProject.Description"></textarea>
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Länk</label>
-    <input class="form-control" @bind="newProject.Link" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Taggar (komma-separerat)</label>
-    <input class="form-control" @bind="tagsInput" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Projektbild (valfri)</label>
-    <InputFile OnChange="OnImageSelected" accept="image/*" />
-</div>
-
-<button class="btn btn-success" @onclick="AddProjectAsync">Spara projekt</button>
-
-@if (successMessage != null)
+@if (projects == null)
 {
-    <div class="alert alert-success mt-3">@successMessage</div>
+    <p>Laddar projekt...</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var project in projects)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+                    {
+                        <img src="@project.ImageUrl" class="card-img-top" alt="@project.Title" />
+                    }
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@project.Title</h5>
+                        <p class="card-text flex-grow-1">@project.Description</p>
+
+                        @if (project.Tags?.Any() == true)
+                        {
+                            <div class="mb-2">
+                                @foreach (var tag in project.Tags)
+                                {
+                                    <span class="badge bg-secondary me-1">@tag</span>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2 mt-auto">
+                            <button class="btn btn-sm btn-outline-danger w-50" @onclick="() => DeleteProjectAsync(project)">🗑 Ta bort</button>
+                            <button class="btn btn-sm btn-outline-secondary w-50" @onclick="() => OpenEditModal(project)">✏️ Redigera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
 
-
-<button class="btn btn-success" @onclick="AddProjectAsync">Spara projekt</button>
-
-@if (successMessage != null)
+<!-- Modal -->
+@if (showModal && editingProject != null)
 {
-    <div class="alert alert-success mt-3">@successMessage</div>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">✏️ Redigera projekt</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Titel</label>
+                        <input class="form-control" @bind="editingProject.Title" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Beskrivning</label>
+                        <textarea class="form-control" @bind="editingProject.Description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Länk</label>
+                        <input class="form-control" @bind="editingProject.Link" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Taggar (komma-separerat)</label>
+                        <input class="form-control" @bind="tagsInput" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bild-URL</label>
+                        <input class="form-control" @bind="editingProject.ImageUrl" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ladda upp ny bild (valfri)</label>
+                        <InputFile OnChange="OnImageSelected" accept="image/*" class="form-control" />
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Avbryt</button>
+                    <button class="btn btn-success" @onclick="SaveProjectAsync">💾 Spara ändringar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
+
 
 @code {
-    private Project newProject = new();
+    private List<Project>? projects;
+    private Project? editingProject;
     private string tagsInput = "";
-    private IBrowserFile? selectedImage;
-    private string? successMessage;
+    private bool showModal = false;
 
-    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    protected override async Task OnInitializedAsync()
     {
-        selectedImage = e.File;
+        projects = await FirestoreService.GetProjectsAsync();
     }
 
-    private async Task AddProjectAsync()
+    private async Task DeleteProjectAsync(Project project)
     {
-        newProject.Tags = tagsInput
+        await FirestoreService.DeleteProjectAsync(project);
+        projects = await FirestoreService.GetProjectsAsync();
+    }
+
+    private void OpenEditModal(Project project)
+    {
+        editingProject = new Project
+            {
+                Id = project.Id,
+                Title = project.Title,
+                Description = project.Description,
+                Link = project.Link,
+                Tags = project.Tags?.ToList() ?? new(),
+                ImageUrl = project.ImageUrl
+            };
+
+        tagsInput = string.Join(", ", editingProject.Tags ?? []);
+        showModal = true;
+    }
+
+    private async Task SaveProjectAsync()
+    {
+        if (editingProject == null) return;
+
+        editingProject.Tags = tagsInput
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToList();
 
         if (selectedImage != null)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "projects");
-            Directory.CreateDirectory(uploadsFolder); // Säkerställ att mappen finns
+            Directory.CreateDirectory(uploadsFolder);
 
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedImage.Name)}";
             var filePath = Path.Combine(uploadsFolder, fileName);
@@ -72,14 +150,29 @@
             await using FileStream fs = new(filePath, FileMode.Create);
             await selectedImage.OpenReadStream().CopyToAsync(fs);
 
-            // Ange relativ sökväg till bilden i projektet
-            newProject.ImageUrl = $"/images/projects/{fileName}";
+            editingProject.ImageUrl = $"/images/projects/{fileName}";
         }
 
-        await FirestoreService.AddProjectAsync(newProject);
-        successMessage = "Projektet har lagts till!";
-        newProject = new();
-        tagsInput = "";
+        await FirestoreService.UpdateProjectAsync(editingProject);
+        showModal = false;
+        editingProject = null;
         selectedImage = null;
+        projects = await FirestoreService.GetProjectsAsync();
+    }
+
+
+    private IBrowserFile? selectedImage;
+
+    private void OnImageSelected(InputFileChangeEventArgs e)
+    {
+        selectedImage = e.File;
+    }
+
+
+    private void CloseModal()
+    {
+        editingProject = null;
+        showModal = false;
     }
 }
+

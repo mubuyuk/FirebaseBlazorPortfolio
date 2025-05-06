@@ -18,6 +18,9 @@ namespace MyPortfolio.Models
     [FirestoreData]
     public class Project
     {
+        [FirestoreDocumentId]
+        public string Id { get; set; }
+
         [FirestoreProperty]
         public string Title { get; set; }
 
@@ -28,9 +31,9 @@ namespace MyPortfolio.Models
         public string Link { get; set; }
 
         [FirestoreProperty]
-        public List<string> Tags { get; set; } = new();
+        public string ImageUrl { get; set; }
 
         [FirestoreProperty]
-        public string ImageUrl { get; set; }
+        public List<string> Tags { get; set; } = new();
     }
 }
