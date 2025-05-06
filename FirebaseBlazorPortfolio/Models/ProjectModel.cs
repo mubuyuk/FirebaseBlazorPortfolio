@@ -30,5 +30,7 @@ namespace MyPortfolio.Models
         [FirestoreProperty]
         public List<string> Tags { get; set; } = new();
 
+        [FirestoreProperty]
+        public string ImageUrl { get; set; }
     }
 }

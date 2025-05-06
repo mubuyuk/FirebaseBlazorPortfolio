@@ -1,6 +1,11 @@
 ﻿@using MyPortfolio.Models
 
 <div class="card h-100 shadow-sm">
+    @if (!string.IsNullOrWhiteSpace(Project.ImageUrl))
+    {
+        <img src="@Project.ImageUrl" class="card-img-top" alt="@Project.Title" />
+    }
+
     <div class="card-body d-flex flex-column">
         <h5 class="card-title">@Project.Title</h5>
 

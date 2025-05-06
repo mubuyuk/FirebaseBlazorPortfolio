@@ -53,47 +53,10 @@ namespace MyPortfolio.Services
             return projects;
         }
 
-        public async Task SeedProjectsAsync()
+        public async Task AddProjectAsync(Project project)
         {
-            CollectionReference projectsRef = _firestoreDb.Collection("projects");
-
-            var projects = new List<Project>
-    {
-        new()
-        {
-            Title = "Portfolio Website",
-            Description = "Responsiv Blazor Server-portfolio med Firebase och Bootstrap.",
-            Link = "https://github.com/mubuyuk/portfolio",
-            Tags = new List<string> { "Blazor", ".NET", "Firebase", "Bootstrap" }
-        },
-        new()
-        {
-            Title = "Azure DevOps Pipeline Demo",
-            Description = "CI/CD-pipeline för .NET med slot-deployment och testautomatisering.",
-            Link = "https://github.com/mubuyuk/devops-demo",
-            Tags = new List<string> { "Azure DevOps", "CI/CD", ".NET", "Pipelines" }
-        },
-        new()
-        {
-            Title = "MongoDB Admin Tool",
-            Description = "Admin-UI för MongoDB Atlas med Blazor och realtidsfunktioner.",
-            Link = "https://github.com/mubuyuk/mongo-admin",
-            Tags = new List<string> { "MongoDB", "Blazor", "Admin UI" }
-        },
-        new()
-        {
-            Title = "Blazor Chatbot",
-            Description = "En lokal AI-chatbot byggd i Blazor Server och C#.",
-            Link = "https://github.com/mubuyuk/blazor-chatbot",
-            Tags = new List<string> { "Blazor", "Chatbot", "AI", ".NET" }
+            var projectsRef = _firestoreDb.Collection("projects");
+            await projectsRef.AddAsync(project);
         }
-    };
-
-            foreach (var project in projects)
-            {
-                await projectsRef.AddAsync(project);
-            }
-        }
-
     }
 }

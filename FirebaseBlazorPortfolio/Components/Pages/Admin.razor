@@ -1,38 +1,85 @@
 ﻿@page "/admin"
-@rendermode InteractiveServer
 @inject FirestoreService FirestoreService
+@rendermode InteractiveServer
 
-<h2>🛠 Adminpanel</h2>
+<h2 class="mb-4">🛠 Adminpanel: Lägg till nytt projekt</h2>
 
 <div class="mb-3">
-    <button class="btn btn-primary" @onclick="SeedProjectsAsync">Lägg till exempelprojekt</button>
+    <label class="form-label">Titel</label>
+    <input class="form-control" @bind="newProject.Title" />
 </div>
+
+<div class="mb-3">
+    <label class="form-label">Beskrivning</label>
+    <textarea class="form-control" @bind="newProject.Description"></textarea>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Länk</label>
+    <input class="form-control" @bind="newProject.Link" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Taggar (komma-separerat)</label>
+    <input class="form-control" @bind="tagsInput" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Projektbild (valfri)</label>
+    <InputFile OnChange="OnImageSelected" accept="image/*" />
+</div>
+
+<button class="btn btn-success" @onclick="AddProjectAsync">Spara projekt</button>
 
 @if (successMessage != null)
 {
-    <div class="alert alert-success">@successMessage</div>
+    <div class="alert alert-success mt-3">@successMessage</div>
 }
-@if (errorMessage != null)
+
+
+<button class="btn btn-success" @onclick="AddProjectAsync">Spara projekt</button>
+
+@if (successMessage != null)
 {
-    <div class="alert alert-danger">@errorMessage</div>
+    <div class="alert alert-success mt-3">@successMessage</div>
 }
 
 @code {
+    private Project newProject = new();
+    private string tagsInput = "";
+    private IBrowserFile? selectedImage;
     private string? successMessage;
-    private string? errorMessage;
 
-    private async Task SeedProjectsAsync()
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
     {
-        try
+        selectedImage = e.File;
+    }
+
+    private async Task AddProjectAsync()
+    {
+        newProject.Tags = tagsInput
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+
+        if (selectedImage != null)
         {
-            await FirestoreService.SeedProjectsAsync();
-            successMessage = "Projekten har lagts till i Firestore!";
-            errorMessage = null;
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "projects");
+            Directory.CreateDirectory(uploadsFolder); // Säkerställ att mappen finns
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(selectedImage.Name)}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            await using FileStream fs = new(filePath, FileMode.Create);
+            await selectedImage.OpenReadStream().CopyToAsync(fs);
+
+            // Ange relativ sökväg till bilden i projektet
+            newProject.ImageUrl = $"/images/projects/{fileName}";
         }
-        catch (Exception ex)
-        {
-            successMessage = null;
-            errorMessage = $"Ett fel uppstod: {ex.Message}";
-        }
+
+        await FirestoreService.AddProjectAsync(newProject);
+        successMessage = "Projektet har lagts till!";
+        newProject = new();
+        tagsInput = "";
+        selectedImage = null;
     }
 }
