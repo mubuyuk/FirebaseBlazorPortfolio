@@ -63,36 +63,28 @@ namespace MyPortfolio.Services
         {
             Title = "Portfolio Website",
             Description = "Responsiv Blazor Server-portfolio med Firebase och Bootstrap.",
-            ImageUrl = "/images/projects/portfolio.png",
             Link = "https://github.com/mubuyuk/portfolio",
-            Date = new DateTime(2024, 12, 1),
             Tags = new List<string> { "Blazor", ".NET", "Firebase", "Bootstrap" }
         },
         new()
         {
             Title = "Azure DevOps Pipeline Demo",
             Description = "CI/CD-pipeline för .NET med slot-deployment och testautomatisering.",
-            ImageUrl = "/images/projects/devops.png",
             Link = "https://github.com/mubuyuk/devops-demo",
-            Date = new DateTime(2024, 10, 5),
             Tags = new List<string> { "Azure DevOps", "CI/CD", ".NET", "Pipelines" }
         },
         new()
         {
             Title = "MongoDB Admin Tool",
             Description = "Admin-UI för MongoDB Atlas med Blazor och realtidsfunktioner.",
-            ImageUrl = "/images/projects/mongodb-tool.png",
             Link = "https://github.com/mubuyuk/mongo-admin",
-            Date = new DateTime(2024, 8, 20),
             Tags = new List<string> { "MongoDB", "Blazor", "Admin UI" }
         },
         new()
         {
             Title = "Blazor Chatbot",
             Description = "En lokal AI-chatbot byggd i Blazor Server och C#.",
-            ImageUrl = "/images/projects/chatbot.png",
             Link = "https://github.com/mubuyuk/blazor-chatbot",
-            Date = new DateTime(2025, 1, 15),
             Tags = new List<string> { "Blazor", "Chatbot", "AI", ".NET" }
         }
     };

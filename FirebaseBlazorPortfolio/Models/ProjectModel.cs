@@ -25,13 +25,7 @@ namespace MyPortfolio.Models
         public string Description { get; set; }
 
         [FirestoreProperty]
-        public string ImageUrl { get; set; }
-
-        [FirestoreProperty]
         public string Link { get; set; }
-
-        [FirestoreProperty]
-        public DateTime Date { get; set; }  // eller string om du hellre skriver manuellt
 
         [FirestoreProperty]
         public List<string> Tags { get; set; } = new();
