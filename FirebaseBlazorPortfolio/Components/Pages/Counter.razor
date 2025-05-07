@@ -1,19 +1,43 @@
-﻿@page "/counter"
+﻿@page "/tabs"
 @rendermode InteractiveServer
 
-<PageTitle>Counter</PageTitle>
+<h3>My Tabs</h3>
 
-<h1>Counter</h1>
+<ul class="nav nav-tabs mb-3" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(activeTab == "work" ? "active" : "")"
+                type="button"
+                role="tab"
+                aria-selected="@(activeTab == "work")"
+                @onclick="@(() => SetTab("work"))">
+            Work
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(activeTab == "education" ? "active" : "")"
+                type="button"
+                role="tab"
+                aria-selected="@(activeTab == "education")"
+                @onclick="@(() => SetTab("education"))">
+            Education
+        </button>
+    </li>
+</ul>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="tab-content">
+    <div class="tab-pane fade @(activeTab == "work" ? "show active" : "")" role="tabpanel">
+        <p>Here is the work content.</p>
+    </div>
+    <div class="tab-pane fade @(activeTab == "education" ? "show active" : "")" role="tabpanel">
+        <p>Here is the education content.</p>
+    </div>
+</div>
 
 @code {
-    private int currentCount = 0;
+    private string activeTab = "work";
 
-    private void IncrementCount()
+    private void SetTab(string tabName)
     {
-        currentCount++;
+        activeTab = tabName;
     }
 }

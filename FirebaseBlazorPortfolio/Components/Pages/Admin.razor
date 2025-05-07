@@ -1,107 +1,106 @@
 ﻿@page "/admin"
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
 @inject FirestoreService FirestoreService
 
-<h2 class="mb-4">🎛 Adminpanel – Projekt</h2>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">🎛 Adminpanel – Projekt</h2>
+        <button class="btn btn-success" @onclick="CreateNewProject">➕ Lägg till nytt projekt</button>
+    </div>
 
-@if (projects == null)
-{
-    <p>Laddar projekt...</p>
-}
-else
-{
-    <div class="row g-4">
-        @foreach (var project in projects)
-        {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm">
-                    @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
-                    {
-                        <img src="@project.ImageUrl" class="card-img-top" alt="@project.Title" />
-                    }
-
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@project.Title</h5>
-                        <p class="card-text flex-grow-1">@project.Description</p>
-
-                        @if (project.Tags?.Any() == true)
+    @if (projects == null)
+    {
+        <p>Laddar projekt...</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var project in projects)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
                         {
-                            <div class="mb-2">
-                                @foreach (var tag in project.Tags)
-                                {
-                                    <span class="badge bg-secondary me-1">@tag</span>
-                                }
-                            </div>
+                            <img src="@project.ImageUrl" class="card-img-top" alt="@project.Title" />
                         }
 
-                        <div class="d-flex gap-2 mt-auto">
-                            <button class="btn btn-sm btn-outline-danger w-50" @onclick="() => DeleteProjectAsync(project)">🗑 Ta bort</button>
-                            <button class="btn btn-sm btn-outline-secondary w-50" @onclick="() => OpenEditModal(project)">✏️ Redigera</button>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@project.Title</h5>
+                            <p class="card-text flex-grow-1">@project.Description</p>
+
+                            @if (project.Tags?.Any() == true)
+                            {
+                                <div class="mb-2">
+                                    @foreach (var tag in project.Tags)
+                                    {
+                                        <span class="badge bg-secondary me-1">@tag</span>
+                                    }
+                                </div>
+                            }
+
+                            <div class="d-flex gap-2 mt-auto">
+                                <button class="btn btn-sm btn-outline-danger w-50" @onclick="() => DeleteProjectAsync(project)">🗑 Ta bort</button>
+                                <button class="btn btn-sm btn-outline-secondary w-50" @onclick="() => OpenEditModal(project)">✏️ Redigera</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
 
-<!-- Modal -->
-@if (showModal && editingProject != null)
-{
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">✏️ Redigera projekt</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Titel</label>
-                        <input class="form-control" @bind="editingProject.Title" />
+    <!-- Modal -->
+    @if (showModal && editingProject != null)
+    {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@((string.IsNullOrEmpty(editingProject.Id) ? "➕ Lägg till nytt projekt" : "✏️ Redigera projekt"))</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
                     </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Titel</label>
+                            <input class="form-control" @bind="editingProject.Title" />
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Beskrivning</label>
-                        <textarea class="form-control" @bind="editingProject.Description" rows="3"></textarea>
+                        <div class="mb-3">
+                            <label class="form-label">Beskrivning</label>
+                            <textarea class="form-control" @bind="editingProject.Description" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Länk</label>
+                            <input class="form-control" @bind="editingProject.Link" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Taggar (komma-separerat)</label>
+                            <input class="form-control" @bind="tagsInput" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ladda upp ny bild (valfri)</label>
+                            <InputFile OnChange="OnImageSelected" class="form-control" accept="image/*" />
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Länk</label>
-                        <input class="form-control" @bind="editingProject.Link" />
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="CloseModal">Avbryt</button>
+                        <button class="btn btn-success" @onclick="SaveProjectAsync">💾 Spara</button>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Taggar (komma-separerat)</label>
-                        <input class="form-control" @bind="tagsInput" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Bild-URL</label>
-                        <input class="form-control" @bind="editingProject.ImageUrl" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Ladda upp ny bild (valfri)</label>
-                        <InputFile OnChange="OnImageSelected" accept="image/*" class="form-control" />
-                    </div>
-
-
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="CloseModal">Avbryt</button>
-                    <button class="btn btn-success" @onclick="SaveProjectAsync">💾 Spara ändringar</button>
                 </div>
             </div>
         </div>
-    </div>
-}
-
+    }
+</div>
 
 @code {
     private List<Project>? projects;
     private Project? editingProject;
     private string tagsInput = "";
+    private IBrowserFile? selectedImage;
     private bool showModal = false;
 
     protected override async Task OnInitializedAsync()
@@ -109,10 +108,12 @@ else
         projects = await FirestoreService.GetProjectsAsync();
     }
 
-    private async Task DeleteProjectAsync(Project project)
+    private void CreateNewProject()
     {
-        await FirestoreService.DeleteProjectAsync(project);
-        projects = await FirestoreService.GetProjectsAsync();
+        editingProject = new Project();
+        tagsInput = "";
+        selectedImage = null;
+        showModal = true;
     }
 
     private void OpenEditModal(Project project)
@@ -128,6 +129,7 @@ else
             };
 
         tagsInput = string.Join(", ", editingProject.Tags ?? []);
+        selectedImage = null;
         showModal = true;
     }
 
@@ -153,26 +155,36 @@ else
             editingProject.ImageUrl = $"/images/projects/{fileName}";
         }
 
-        await FirestoreService.UpdateProjectAsync(editingProject);
+        if (string.IsNullOrEmpty(editingProject.Id))
+        {
+            await FirestoreService.AddProjectAsync(editingProject);
+        }
+        else
+        {
+            await FirestoreService.UpdateProjectAsync(editingProject);
+        }
+
         showModal = false;
         editingProject = null;
         selectedImage = null;
         projects = await FirestoreService.GetProjectsAsync();
     }
 
-
-    private IBrowserFile? selectedImage;
+    private async Task DeleteProjectAsync(Project project)
+    {
+        await FirestoreService.DeleteProjectAsync(project);
+        projects = await FirestoreService.GetProjectsAsync();
+    }
 
     private void OnImageSelected(InputFileChangeEventArgs e)
     {
         selectedImage = e.File;
     }
 
-
     private void CloseModal()
     {
         editingProject = null;
+        selectedImage = null;
         showModal = false;
     }
 }
-
