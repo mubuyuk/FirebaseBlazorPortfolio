@@ -1,0 +1,11 @@
+﻿.about-section {
+    background-color: #1f1f33;
+}
+
+.about-box {
+    background-color: #2a2a45;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}

@@ -4,60 +4,15 @@
 
 <PageTitle>Murat Buyuksal - Portfolio</PageTitle>
 
-<!-- HEADER -->
-<header class="bg-dark text-white py-5">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold">Murat Buyuksal</h1>
-        <p class="lead">Software Developer | Azure Enthusiast | Azure DevOps</p>
+<Header />
 
-        <div class="d-flex justify-content-center gap-3 mt-3">
-            <a href="https://github.com/mubuyuk" class="btn btn-outline-light btn-sm" target="_blank" aria-label="GitHub" title="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://linkedin.com/in/murat-buyuksal-1887a9302" class="btn btn-outline-light btn-sm" target="_blank" aria-label="LinkedIn" title="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="mailto:muratbuyuksal@gmail.com" class="btn btn-outline-light btn-sm" aria-label="Email" title="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
-        </div>
-    </div>
-</header>
+<ProfileSection />
 
-<!-- SKILLS -->
-@* <section class="py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center mb-4">🛠 Mina tekniska kunskaper</h2>
+<AboutMe />
 
-        @if (skills == null)
-        {
-            <p class="text-center">Laddar skills...</p>
-        }
-        else if (!skills.Any())
-        {
-            <p class="text-center text-muted">Inga skills hittades i databasen.</p>
-        }
-        else
-        {
-            @foreach (var categoryGroup in skills.GroupBy(s => s.Category))
-            {
-                <h4 class="mt-5 mb-3">@categoryGroup.Key</h4>
-                <div class="row g-3">
-                    @foreach (var skill in categoryGroup)
-                    {
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <SkillCard Skill="skill" />
-                        </div>
-                    }
-                </div>
-            }
-        }
-    </div>
-</section> *@
-
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">📁 Mina projekt</h2>
+@* <section class="py-5">
+    <div class="container-fluid">
+        <h2 class="text-center mb-5">📁 Mina projekt</h2>
 
         @if (projects == null)
         {
@@ -69,13 +24,21 @@
         }
         else
         {
-            <div class="row g-4">
-                @foreach (var project in projects)
-                {
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <ProjectCard Project="project" />
+            <div class="row justify-content-center">
+                <div class="col-1 d-none d-lg-block"></div>  <!-- Vänsterspalt (luft) -->
+
+                <div class="col-12 col-xl-8 px-4">
+                    <div class="row g-4">
+                        @foreach (var project in projects)
+                        {
+                            <div class="col-12 col-md-8 col-lg-4">
+                                <ProjectCard Project="project" />
+                            </div>
+                        }
                     </div>
-                }
+                </div>
+
+                <div class="col-1 d-none d-lg-block"></div>  <!-- Högerspalt (luft) -->
             </div>
         }
     </div>
@@ -91,10 +54,4 @@
     {
         projects = await FirestoreService.GetProjectsAsync();
     }
-    // private List<Skill>? skills;
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     skills = await FirestoreService.GetSkillsAsync();
-    // }
-}
+} *@

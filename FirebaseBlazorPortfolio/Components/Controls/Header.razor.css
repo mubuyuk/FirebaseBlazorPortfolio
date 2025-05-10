@@ -1,0 +1,47 @@
+﻿.main-header {
+    background-color: #1f1f33;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+    .brand:hover {
+        border-bottom: 3px solid #28a745;
+    }
+
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+a i {
+    transition: transform 0.2s;
+}
+
+a:hover i {
+    transform: scale(1.2);
+}
+
+a.icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+    a.icon-link:hover {
+        border-color: #28a745;
+        background-color: rgba(40, 167, 69, 0.1);
+        transform: scale(1.1);
+    }

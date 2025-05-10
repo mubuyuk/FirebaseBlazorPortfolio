@@ -6,9 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+<ItemGroup>
+  <Folder Include="Keys\" />
+</ItemGroup>
+
+
   <ItemGroup>
     <Folder Include="Keys\" />
-    <Folder Include="wwwroot\images\projects\" />
   </ItemGroup>
 
   <ItemGroup>
