@@ -1,0 +1,23 @@
+﻿.about-section {
+    background-color: #1f1f33;
+}
+
+.about-box {
+    background-color: #2a2a45;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-tabs .nav-link {
+    color: #ccc;
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+}
+
+    .nav-tabs .nav-link.active {
+        color: #28a745;
+        border-bottom: 2px solid #28a745;
+        background-color: transparent;
+    }
+

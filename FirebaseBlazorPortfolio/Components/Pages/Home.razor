@@ -8,50 +8,5 @@
 
 <ProfileSection />
 
-<AboutMe />
+<AboutTabs />
 
-@* <section class="py-5">
-    <div class="container-fluid">
-        <h2 class="text-center mb-5">📁 Mina projekt</h2>
-
-        @if (projects == null)
-        {
-            <p class="text-center">Laddar projekt...</p>
-        }
-        else if (!projects.Any())
-        {
-            <p class="text-center text-muted">Inga projekt hittades.</p>
-        }
-        else
-        {
-            <div class="row justify-content-center">
-                <div class="col-1 d-none d-lg-block"></div>  <!-- Vänsterspalt (luft) -->
-
-                <div class="col-12 col-xl-8 px-4">
-                    <div class="row g-4">
-                        @foreach (var project in projects)
-                        {
-                            <div class="col-12 col-md-8 col-lg-4">
-                                <ProjectCard Project="project" />
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <div class="col-1 d-none d-lg-block"></div>  <!-- Högerspalt (luft) -->
-            </div>
-        }
-    </div>
-</section>
-
-
-
-@code {
-
-    private List<Project>? projects;
-
-    protected override async Task OnInitializedAsync()
-    {
-        projects = await FirestoreService.GetProjectsAsync();
-    }
-} *@
