@@ -1,4 +1,5 @@
 using FirebaseBlazorPortfolio.Components;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MyPortfolio.Services;
 
 
@@ -15,6 +16,12 @@ namespace FirebaseBlazorPortfolio
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
             builder.Services.AddSingleton<FirestoreService>();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddHttpClient();
+
 
             var app = builder.Build();
 
@@ -28,6 +35,8 @@ namespace FirebaseBlazorPortfolio
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseStaticFiles();
             app.UseAntiforgery();
 

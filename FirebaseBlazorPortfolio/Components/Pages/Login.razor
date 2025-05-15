@@ -1,0 +1,25 @@
+﻿@page "/login"
+
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<h3>Admin Login</h3>
+
+<input @bind="email" placeholder="Email" class="form-control" />
+<input @bind="password" placeholder="Password" type="password" class="form-control my-2" />
+<button @onclick="HandleLogin" class="btn btn-success">Logga in</button>
+
+
+@code {
+    string email = "";
+    string password = "";
+
+    private async Task HandleLogin()
+    {
+        var token = await JS.InvokeAsync<string>("loginWithFirebase", email, password);
+        // await Http.PostAsJsonAsync("/api/auth/login", new { IdToken = token });
+        Nav.NavigateTo("/admin");
+    }
+}

@@ -1,7 +1,12 @@
 ﻿@page "/admin"
+@attribute [Authorize]
+
 @rendermode InteractiveServer
-@using Microsoft.AspNetCore.Components.Forms
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 @inject FirestoreService FirestoreService
+
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -105,8 +110,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            Navigation.NavigateTo("/login", true); // Skickar tillbaka till login
+            return;
+        }
+
         projects = await FirestoreService.GetProjectsAsync();
     }
+
 
     private void CreateNewProject()
     {
