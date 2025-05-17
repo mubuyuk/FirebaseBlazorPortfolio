@@ -46,28 +46,38 @@
                         }
                         else if (activeTab == "projects")
                         {
-                            <div>
-                                <h2 class="mb-4">Mina projekt</h2>
-                                @foreach (var project in projects)
+                            <div class="row g-4 justify-content-center">
+                                @foreach (var project in projects?.Take(visibleCount) ?? Enumerable.Empty<Project>())
                                 {
-                                    <ProjectCard Project="project" />
+                                    <div class="col-12 col-sm-6 col-md-4 col-lg-6">
+                                        <div class="project-card">
+                                            <ProjectCard Project="project" />
+                                        </div>
+                                    </div>
                                 }
-
                             </div>
+
+                            @if (projects?.Count > step)
+                            {
+                                <div class="text-center mt-3 d-flex justify-content-center gap-2">
+                                    @if (visibleCount < projects.Count)
+                                    {
+                                        <button class="btn btn-outline-success" @onclick="ShowMore">Visa fler</button>
+                                    }
+                                    @if (visibleCount > step)
+                                    {
+                                        <button class="btn btn-outline-secondary" @onclick="ShowLess">Visa färre</button>
+                                    }
+                                </div>
+                            }
+
+
+
                         }
                         else if (activeTab == "cv")
                         {
                             <div>
-                                <h2 class="mb-4">Cv</h2>
-                                <h5>Erfarenhet</h5>
-                                <ul>
-                                    <li>Lastbilschaufför & ruttplanerare – 10+ år</li>
-                                    <li>Backendprojekt i C# / .NET / Azure</li>
-                                </ul>
-                                <h5>Utbildning</h5>
-                                <ul>
-                                    <li>.NET Cloud Developer – IT-Högskolan Göteborg</li>
-                                </ul>
+								<CvSection />
                             </div>
                         }
                     </div>
@@ -87,10 +97,21 @@
     }
 
     private List<Project>? projects;
+    private int visibleCount = 4;
+    private const int step = 4;
 
     protected override async Task OnInitializedAsync()
     {
         projects = await FirestoreService.GetProjectsAsync();
     }
 
+    private void ShowMore()
+    {
+        visibleCount += 4;
+    }
+
+    private void ShowLess()
+    {
+        visibleCount = step;
+    }
 }

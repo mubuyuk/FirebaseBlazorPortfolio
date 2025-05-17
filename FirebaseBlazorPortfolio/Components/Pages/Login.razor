@@ -1,9 +1,9 @@
 ﻿@page "/login"
+@rendermode InteractiveServer
 
 @inject IJSRuntime JS
 @inject HttpClient Http
 @inject NavigationManager Nav
-@rendermode InteractiveServer
 
 <h3>Admin Login</h3>
 
@@ -19,7 +19,7 @@
     private async Task HandleLogin()
     {
         var token = await JS.InvokeAsync<string>("loginWithFirebase", email, password);
-        // await Http.PostAsJsonAsync("/api/auth/login", new { IdToken = token });
-        Nav.NavigateTo("/admin");
+        await Http.PostAsJsonAsync("/api/auth/login", new { IdToken = token });
+        Nav.NavigateTo("/admin", forceLoad: true);
     }
 }

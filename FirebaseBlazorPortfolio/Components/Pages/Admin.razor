@@ -1,7 +1,6 @@
 ﻿@page "/admin"
-@attribute [Authorize]
-
 @rendermode InteractiveServer
+@* @attribute [Authorize] *@
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
@@ -110,14 +109,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        // var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        // var user = authState.User;
 
-        if (!user.Identity?.IsAuthenticated ?? true)
-        {
-            Navigation.NavigateTo("/login", true); // Skickar tillbaka till login
-            return;
-        }
+        // if (!user.Identity?.IsAuthenticated ?? true)
+        // {
+        //     Navigation.NavigateTo("/login", true);
+        //     return;
+        // }
 
         projects = await FirestoreService.GetProjectsAsync();
     }

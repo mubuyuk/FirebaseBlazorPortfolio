@@ -6,44 +6,47 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-[ApiController]
-[Route("api/auth")]
-public class AuthController : ControllerBase
+namespace FirebaseBlazorPortfolio.Components.Controllers
 {
-    private static bool firebaseInitialized = false;
-
-    public AuthController(IWebHostEnvironment env)
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
     {
-        if (!firebaseInitialized)
+        private static bool firebaseInitialized = false;
+
+        public AuthController(IWebHostEnvironment env)
         {
-            var path = Path.Combine(env.ContentRootPath, "Keys", "firebase-adminsdk.json");
-            FirebaseApp.Create(new AppOptions()
+            if (!firebaseInitialized)
             {
-                Credential = GoogleCredential.FromFile(path)
-            });
-            firebaseInitialized = true;
+                var path = Path.Combine(env.ContentRootPath, "Keys", "portfolio-17515-firebase-adminsdk-fbsvc-d9017fc234.json");
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile(path)
+                });
+                firebaseInitialized = true;
+            }
         }
-    }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] TokenDto dto)
-    {
-        var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.IdToken);
-        var claims = new List<Claim>
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] TokenDto dto)
         {
-            new Claim(ClaimTypes.NameIdentifier, decodedToken.Uid),
-            new Claim(ClaimTypes.Email, decodedToken.Claims["email"].ToString())
-        };
+            var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(dto.IdToken);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, decodedToken.Uid),
+                new Claim(ClaimTypes.Email, decodedToken.Claims["email"].ToString())
+            };
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-        return Ok();
-    }
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            return Ok();
+        }
 
-    public class TokenDto
-    {
-        public string IdToken { get; set; } = string.Empty;
+        public class TokenDto
+        {
+            public string IdToken { get; set; } = string.Empty;
+        }
     }
 }

@@ -1,0 +1,28 @@
+﻿.main-footer {
+    background-color: #1f1f33;
+   /* border-top: 1px solid rgba(255, 255, 255, 0.1);*/
+}
+
+.icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+    .icon-link:hover {
+        border-color: #28a745;
+        background-color: rgba(40, 167, 69, 0.1);
+        transform: scale(1.1);
+    }
+
+a i {
+    transition: transform 0.2s;
+}
+
+a:hover i {
+    transform: scale(1.2);
+}

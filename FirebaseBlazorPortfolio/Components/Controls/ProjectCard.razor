@@ -1,34 +1,40 @@
 ﻿@using MyPortfolio.Models
 
-<div class="card h-100 shadow-sm">
-    @if (!string.IsNullOrWhiteSpace(Project.ImageUrl))
-    {
-        <img src="@Project.ImageUrl" class="card-img-top" alt="@Project.Title" />
-    }
-
-    <div class="card-body d-flex flex-column">
-        <h5 class="card-title">@Project.Title</h5>
-
-        <p class="card-text flex-grow-1">@Project.Description</p>
-
-        @if (Project.Tags?.Any() == true)
+<div class="project-card d-flex flex-column">
+    <div class="project-image-container mb-3">
+        @if (!string.IsNullOrWhiteSpace(Project.ImageUrl))
         {
-            <div class="mb-2">
-                @foreach (var tag in Project.Tags)
-                {
-                    <span class="badge bg-secondary me-1">@tag</span>
-                }
+            <img src="@Project.ImageUrl" class="img-fluid rounded" alt="@Project.Title" />
+        }
+        else
+        {
+            <div class="no-image-placeholder d-flex align-items-center justify-content-center">
+                <i class="fas fa-image fa-2x text-muted"></i>
             </div>
         }
-
-        <a href="@Project.Link"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="btn btn-primary mt-auto">
-            Visa projekt
-        </a>
     </div>
+
+    <h5 class="project-title text-white">@Project.Title</h5>
+
+    <p class="project-description text-white-50 flex-grow-1">
+        @Project.Description
+    </p>
+
+    @if (Project.Tags?.Any() == true)
+    {
+        <div class="mt-2">
+            @foreach (var tag in Project.Tags)
+            {
+                <span class="badge bg-secondary me-1">@tag</span>
+            }
+        </div>
+    }
+
+    <a href="@Project.Link" target="_blank" class="mt-3 text-success fw-bold text-decoration-none">
+        <i class="fab fa-github me-1"></i> GitHub
+    </a>
 </div>
+
 
 @code {
     [Parameter]
