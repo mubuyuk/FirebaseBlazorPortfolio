@@ -3,115 +3,129 @@
     private void SetSection(string section) => activeSection = section;
 }
 
-<section class="cv-section text-white pt-3 pb-5">
+<section class="cv-section text-white">
     <div class="container">
+        <div class="cv-box px-0">
 
-        <!-- Filtreringsknappar -->
-        <div class="text-end mb-3">
-            <button class="btn btn-sm btn-outline-success me-2 @(activeSection == "edu" ? "active" : "")"
-                    @onclick="@(() => SetSection("edu"))">
-                Utbildning & Teknik
-            </button>
-            <button class="btn btn-sm btn-outline-success @(activeSection == "exp" ? "active" : "")"
-                    @onclick="@(() => SetSection("exp"))">
-                Erfarenhet
-            </button>
+            <!-- Filtreringsknappar -->
+            <div class="text-end mb-4">
+                <button class="btn btn-sm btn-outline-success me-2 @(activeSection == "edu" ? "active" : "")"
+                        @onclick="@(() => SetSection("edu"))">
+                    Utbildning & Teknik
+                </button>
+                <button class="btn btn-sm btn-outline-success @(activeSection == "exp" ? "active" : "")"
+                        @onclick="@(() => SetSection("exp"))">
+                    Erfarenhet
+                </button>
+            </div>
+
+            <!-- UTBILDNING & TEKNIK -->
+            @if (activeSection == "edu")
+            {
+                <div>
+                    <h2 class="display-6 fw-bold text-success mb-4">
+                        <i class="fas fa-graduation-cap me-2"></i>Utbildning
+                    </h2>
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>.NET Cloud Developer - IT-Högskolan</strong>
+                            <span class="text-muted">Göteborg – Aug 2024 – Pågående</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li class="mb-2">Bygger fullstack-applikationer med ASP.NET Core och Blazor (Server & WebAssembly)</li>
+                            <li class="mb-2">Hanterar databaser med SQL Server och MongoDB Atlas, inklusive datamodellering och API-integration</li>
+                            <li class="mb-2">Arbetar enligt Scrum i agila team med CI/CD-flöden och Azure DevOps pipelines</li>
+                            <li class="mb-2">Skapar och hanterar Azure-resurser som App Services, Functions och Blob Storage</li>
+                            <li class="mb-2">Använder Git för versionshantering samt arbetar med testautomatisering och DevOps-praktiker</li>
+                            <li class="mb-2">Erfarenhet av Firebase, API-design, autentisering och säkerhet i molnapplikationer</li>
+                            <li class="mb-2">Drivit egna projekt med fokus på portföljbyggande och molnbaserad arkitektur</li>
+                        </ul>
+                    </div>
+
+
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>IT-gymnasiet</strong>
+                            <span class="text-muted">Göteborg – Juni 2003 – Juni 2006</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li>Specialutformat program, inriktning IT och El</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="display-6 fw-bold text-success mt-5 mb-4">
+                        <i class="fas fa-code me-2"></i>Tekniker & Verktyg
+                    </h2>
+                    <p class="text-white-50 small">
+                        C# · .NET · Blazor · MSSQL · MongoDB · Git · Visual Studio 2022 · Azure · CI/CD · Azure DevOps · HTML · CSS · MS Paint
+                    </p>
+                </div>
+            }
+
+            <!-- ERFARENHET -->
+            @if (activeSection == "exp")
+            {
+                <div>
+                    <h2 class="display-6 fw-bold text-success mb-4">
+                        <i class="fas fa-briefcase me-2"></i>Erfarenhet
+                    </h2>
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>Lastbilschaufför | THL Transportservice AB</strong>
+                            <span class="text-muted">Göteborg – Aug 2016 – Aug 2024</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li>Planerade och koordinerade daglig trafik, följde upp transporter och hanterade avvikelser</li>
+                            <li>Optimerade rutter med digitala planeringsverktyg för effektiva transportflöden</li>
+                        </ul>
+                    </div>
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>Lastbilschaufför | Postnord AB</strong>
+                            <span class="text-muted">Göteborg – Nov 2012 – Jun 2016</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li>Lasta och distribuera paket och pallgods till företag och privatpersoner</li>
+                            <li>Säkerställde att leveranser genomfördes enligt tidsplaner</li>
+                        </ul>
+                    </div>
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>Kundtjänstmedarbetare | TeliaSonera AB</strong>
+                            <span class="text-muted">Göteborg – Nov 2011 – Jul 2012</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li>Hjälpte kunder att lösa tekniska problem med hög servicekvalitet</li>
+                            <li>Hanterade försäljning och teknisk support för digitala tjänster</li>
+                        </ul>
+                    </div>
+
+                    <div class="cv-entry mb-4 p-2">
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <strong>Värnplikt – Försvarsmakten | Transport</strong>
+                            <span class="text-muted">Skövde – Juli 2006 – Juni 2007</span>
+                            <span class="text-muted">Göta Trängregemente T2</span>
+                        </div>
+                        <ul class="text-white-50 mb-0 small">
+                            <li>Utbildning inom fordonsmekanik och reparation av fordon</li>
+                            <li>Utvecklade disciplin, lagarbete och tekniska färdigheter</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <!-- CV-fil -->
+            <div class="text-center mt-5">
+                <a href="/files/Murat-Buyuksal-cv.pdf" target="_blank" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-file-download me-2"></i>Ladda ner som PDF
+                </a>
+            </div>
+
         </div>
-
-        <!-- UTBILDNING & TEKNIK -->
-        @if (activeSection == "edu")
-        {
-            <div>
-                <h4 class="text-success mb-3"><i class="fas fa-graduation-cap me-2"></i>Utbildning</h4>
-
-                <div class="cv-entry mb-4">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <strong>.NET Cloud Developer</strong>
-                        <span class="text-muted">IT-Högskolan, Göteborg – Aug 2024 – Pågående</span>
-                    </div>
-                    <ul class="text-white-50 mb-0 small">
-                        <li>Fokus på systemutveckling i C# och molntjänster (Microsoft Azure)</li>
-                        <li>Webbutveckling i Blazor, databashantering (SQL & MongoDB)</li>
-                        <li>Arbete i agila team med CI/CD-processer, Azure DevOps</li>
-                    </ul>
-                </div>
-
-                <div class="cv-entry mb-4">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <strong>IT-gymnasiet</strong>
-                        <span class="text-muted">Göteborg – Juni 2003 – Juni 2006</span>
-                    </div>
-                    <ul class="text-white-50 mb-0 small">
-                        <li>Specialutformat program, inriktning IT och El</li>
-                    </ul>
-                </div>
-
-                <h4 class="text-success mt-5 mb-3"><i class="fas fa-code me-2"></i>Tekniker & Verktyg</h4>
-                <p class="text-white-50 small">
-                    C# · .NET · Blazor · MSSQL · MongoDB · Git · Visual Studio 2022 · Azure · CI/CD · Azure DevOps · HTML · CSS · MS Paint
-                </p>
-            </div>
-        }
-
-        <!-- ERFARENHET -->
-        @if (activeSection == "exp")
-        {
-            <div>
-                <h4 class="text-success mt-3 mb-3"><i class="fas fa-briefcase me-2"></i>Erfarenhet</h4>
-
-                <div class="cv-entry mb-4">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <strong>Lastbilschaufför | THL Transportservice AB</strong>
-                        <span class="text-muted">Göteborg – Aug 2016 – Aug 2024</span>
-                    </div>
-                    <ul class="text-white-50 mb-0 small">
-                        <li>Planerade och koordinerade daglig trafik, följde upp transporter och hanterade avvikelser</li>
-                        <li>Optimerade rutter med digitala planeringsverktyg för effektiva transportflöden</li>
-                    </ul>
-                </div>
-
-                <div class="cv-entry mb-4">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <strong>Lastbilschaufför | Postnord AB</strong>
-                        <span class="text-muted">Göteborg – Nov 2012 – Jun 2016</span>
-                    </div>
-                    <ul class="text-white-50 mb-0 small">
-                        <li>Lasta och distribuera paket och pallgods till företag och privatpersoner</li>
-                        <li>Säkerställde att leveranser genomfördes enligt tidsplaner</li>
-                    </ul>
-                </div>
-
-                <div class="cv-entry mb-4">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <strong>Kundtjänstmedarbetare | TeliaSonera AB</strong>
-                        <span class="text-muted">Göteborg – Nov 2011 – Jul 2012</span>
-                    </div>
-                    <ul class="text-white-50 mb-0 small">
-                        <li>Hjälpte kunder att lösa tekniska problem med hög servicekvalitet</li>
-                        <li>Hanterade försäljning och teknisk support för digitala tjänster</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="cv-entry mb-4">
-                <div class="d-flex justify-content-between flex-wrap">
-                    <strong>Värnplikt – Försvarsmakten | Transport</strong>
-                    <span class="text-muted">Skövde – Juli 2006 – Juni 2007</span>
-                    <span class="text-muted">Göta Trängregemente T2</span>
-                </div>
-                <ul class="text-white-50 mb-0 small">
-                    <li>Utbildning inom fordonsmekanik och reparation av fordon</li>
-                    <li>Utvecklade disciplin, lagarbete och tekniska färdigheter</li>
-                </ul>
-            </div>
-        }
-
-        <!-- CV-fil -->
-        <div class="text-center mt-4">
-            <a href="/files/Murat-Buyuksal-cv.pdf" target="_blank" class="btn btn-outline-success btn-sm">
-                <i class="fas fa-file-download me-2"></i>Ladda ner som PDF
-            </a>
-        </div>
-
     </div>
 </section>

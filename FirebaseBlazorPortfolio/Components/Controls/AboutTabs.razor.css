@@ -1,12 +1,12 @@
 ﻿.about-section {
     background-color: #1f1f33;
     font-family: Calibri;
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .about-box {
     background-color: #2a2a45;
-    border-radius: 16px;
+    border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 

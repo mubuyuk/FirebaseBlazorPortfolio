@@ -1,1 +1,5 @@
-﻿
+﻿.btn-outline-success.active {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+}
