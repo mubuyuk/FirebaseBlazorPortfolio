@@ -1,104 +1,116 @@
 ﻿@page "/admin"
 @rendermode InteractiveServer
-@* @attribute [Authorize] *@
+@attribute [Authorize]
 
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject FirestoreService FirestoreService
+@inject HttpClient Http
 
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <div class="alert alert-success">
+                <div class="container py-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0">🎛 Adminpanel – Projekt</h2>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success" @onclick="CreateNewProject">➕ Lägg till nytt projekt</button>
+                            <button class="btn btn-outline-secondary" @onclick="Logout">🚪 Logga ut</button>
+                        </div>
+                    </div>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">🎛 Adminpanel – Projekt</h2>
-        <button class="btn btn-success" @onclick="CreateNewProject">➕ Lägg till nytt projekt</button>
-    </div>
-
-    @if (projects == null)
-    {
-        <p>Laddar projekt...</p>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var project in projects)
-            {
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
-                        {
-                            <img src="@project.ImageUrl" class="card-img-top" alt="@project.Title" />
-                        }
-
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">@project.Title</h5>
-                            <p class="card-text flex-grow-1">@project.Description</p>
-
-                            @if (project.Tags?.Any() == true)
+                    @if (projects == null)
+                    {
+                        <p>Laddar projekt...</p>
+                    }
+                    else
+                    {
+                        <div class="row g-4">
+                            @foreach (var project in projects)
                             {
-                                <div class="mb-2">
-                                    @foreach (var tag in project.Tags)
-                                    {
-                                        <span class="badge bg-secondary me-1">@tag</span>
-                                    }
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="card h-100 shadow-sm">
+                                        @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+                                        {
+                                            <img src="@project.ImageUrl" class="card-img-top" alt="@project.Title" />
+                                        }
+
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title">@project.Title</h5>
+                                            <p class="card-text flex-grow-1">@project.Description</p>
+
+                                            @if (project.Tags?.Any() == true)
+                                            {
+                                                <div class="mb-2">
+                                                    @foreach (var tag in project.Tags)
+                                                    {
+                                                        <span class="badge bg-secondary me-1">@tag</span>
+                                                    }
+                                                </div>
+                                            }
+
+                                            <div class="d-flex gap-2 mt-auto">
+                                                <button class="btn btn-sm btn-outline-danger w-50" @onclick="() => DeleteProjectAsync(project)">🗑 Ta bort</button>
+                                                <button class="btn btn-sm btn-outline-secondary w-50" @onclick="() => OpenEditModal(project)">✏️ Redigera</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             }
+                        </div>
+                    }
 
-                            <div class="d-flex gap-2 mt-auto">
-                                <button class="btn btn-sm btn-outline-danger w-50" @onclick="() => DeleteProjectAsync(project)">🗑 Ta bort</button>
-                                <button class="btn btn-sm btn-outline-secondary w-50" @onclick="() => OpenEditModal(project)">✏️ Redigera</button>
+                    @if (showModal && editingProject != null)
+                    {
+                        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">@((string.IsNullOrEmpty(editingProject.Id) ? "➕ Lägg till nytt projekt" : "✏️ Redigera projekt"))</h5>
+                                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Titel</label>
+                                            <input class="form-control" @bind="editingProject.Title" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Beskrivning</label>
+                                            <textarea class="form-control" @bind="editingProject.Description" rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Länk</label>
+                                            <input class="form-control" @bind="editingProject.Link" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Taggar (komma-separerat)</label>
+                                            <input class="form-control" @bind="tagsInput" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Ladda upp ny bild (valfri)</label>
+                                            <InputFile OnChange="OnImageSelected" class="form-control" accept="image/*" />
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" @onclick="CloseModal">Avbryt</button>
+                                        <button class="btn btn-success" @onclick="SaveProjectAsync">💾 Spara</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-
-    <!-- Modal -->
-    @if (showModal && editingProject != null)
-    {
-        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">@((string.IsNullOrEmpty(editingProject.Id) ? "➕ Lägg till nytt projekt" : "✏️ Redigera projekt"))</h5>
-                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Titel</label>
-                            <input class="form-control" @bind="editingProject.Title" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Beskrivning</label>
-                            <textarea class="form-control" @bind="editingProject.Description" rows="3"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Länk</label>
-                            <input class="form-control" @bind="editingProject.Link" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Taggar (komma-separerat)</label>
-                            <input class="form-control" @bind="tagsInput" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Ladda upp ny bild (valfri)</label>
-                            <InputFile OnChange="OnImageSelected" class="form-control" accept="image/*" />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" @onclick="CloseModal">Avbryt</button>
-                        <button class="btn btn-success" @onclick="SaveProjectAsync">💾 Spara</button>
-                    </div>
+                    }
                 </div>
             </div>
-        </div>
-    }
-</div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-danger">
+                ❌ Du är inte inloggad
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
 
 @code {
     private List<Project>? projects;
@@ -109,18 +121,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        // var user = authState.User;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        // if (!user.Identity?.IsAuthenticated ?? true)
-        // {
-        //     Navigation.NavigateTo("/login", true);
-        //     return;
-        // }
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            Navigation.NavigateTo("/login", true);
+            return;
+        }
 
         projects = await FirestoreService.GetProjectsAsync();
     }
-
 
     private void CreateNewProject()
     {
@@ -200,5 +211,11 @@
         editingProject = null;
         selectedImage = null;
         showModal = false;
+    }
+
+    private async Task Logout()
+    {
+        await Http.PostAsync("/api/auth/logout", null);
+        Navigation.NavigateTo("/login", true);
     }
 }

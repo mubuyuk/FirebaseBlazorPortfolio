@@ -1,7 +1,7 @@
 ﻿using Google.Cloud.Firestore;
-using MyPortfolio.Models;
+using FirebaseBlazorPortfolio.Models;
 
-namespace MyPortfolio.Services
+namespace FirebaseBlazorPortfolio.Services
 {
     public class FirestoreService
     {
@@ -9,11 +9,9 @@ namespace MyPortfolio.Services
 
         public FirestoreService(IWebHostEnvironment env)
         {
-            // Hämta sökvägen till din Firebase JSON-nyckel
             string path = Path.Combine(env.ContentRootPath, "Keys", "portfolio-17515-firebase-adminsdk-fbsvc-d9017fc234.json");
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
 
-            // Anslut till Firestore (byt till ditt riktiga Firebase-projekt-ID)
             _firestoreDb = FirestoreDb.Create("portfolio-17515");
         }
 

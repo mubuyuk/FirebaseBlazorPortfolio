@@ -1,8 +1,8 @@
 using FirebaseBlazorPortfolio.Components;
+using FirebaseBlazorPortfolio.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
-using MyPortfolio.Services;
 
 namespace FirebaseBlazorPortfolio
 {
@@ -12,43 +12,45 @@ namespace FirebaseBlazorPortfolio
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1. Razor Components / Blazor Server
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            // 2. Firestore & tjänster
-            builder.Services.AddSingleton<FirestoreService>();
-            builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddAntiforgery();
+            builder.Services.AddControllers();
+            builder.Services.AddSingleton<FirestoreService>();
 
-            // 3. Cookiebaserad autentisering
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/login";
-                options.AccessDeniedPath = "/login";
-                options.Cookie.SameSite = SameSiteMode.Lax; // Viktigt!
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
-
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "FirebaseAuth.Cookie";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                    options.LoginPath = "/login";
+                });
 
             builder.Services.AddAuthorization();
-            builder.Services.AddAuthorizationCore();
 
-            // 4. Blazor AuthenticationStateProvider (utan Identity)
-            builder.Services.AddScoped<ServerAuthenticationStateProvider>();
-            builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
-                provider.GetRequiredService<ServerAuthenticationStateProvider>());
+            builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
-            // 5. HTTP-klient
-            builder.Services.AddHttpClient("Default", client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:7090"); // Justera vid behov
-            });
-            builder.Services.AddScoped(sp =>
-                sp.GetRequiredService<IHttpClientFactory>().CreateClient("Default"));
+            var firebaseConfig = builder.Configuration.GetSection("Firebase");
+            var apiKey = firebaseConfig["ApiKey"];
+            var authDomain = firebaseConfig["AuthDomain"];
 
-            // 6. Bygg och konfigurera appen
+            if (string.IsNullOrEmpty(apiKey))
+                throw new Exception("Firebase API key is not configured");
+            if (string.IsNullOrEmpty(authDomain))
+                throw new Exception("Firebase Auth Domain is not configured");
+
+            builder.Services.AddScoped(provider => new FirebaseAuthService(
+                provider.GetRequiredService<IConfiguration>(),
+                provider.GetRequiredService<IHttpContextAccessor>()));
+
+            builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri("https://localhost:7090") });
+
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -60,11 +62,9 @@ namespace FirebaseBlazorPortfolio
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting(); // viktigt före auth
-
-            app.UseAuthentication(); // måste komma före Authorization
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseAntiforgery();
 
             app.MapControllers();

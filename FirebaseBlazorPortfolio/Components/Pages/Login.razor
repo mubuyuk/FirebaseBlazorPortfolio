@@ -1,25 +1,75 @@
 ﻿@page "/login"
 @rendermode InteractiveServer
+@attribute [AllowAnonymous]
 
-@inject IJSRuntime JS
-@inject HttpClient Http
-@inject NavigationManager Nav
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Web
+@using Microsoft.AspNetCore.Antiforgery
+@inject NavigationManager NavigationManager
+@inject IAntiforgery AntiForgery
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h3>Admin Login</h3>
+<PageTitle>Login - Portfolio</PageTitle>
 
-<input @bind="email" placeholder="Email" class="form-control" />
-<input @bind="password" placeholder="Password" type="password" class="form-control my-2" />
-<button @onclick="HandleLogin" class="btn btn-success">Logga in</button>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/api/auth/login">
+                        <input name="__RequestVerificationToken" type="hidden" value="@_requestToken" />
 
+                        @if (!string.IsNullOrEmpty(_errorMessage))
+                        {
+                            <div class="alert alert-danger mb-3">
+                                @_errorMessage
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="Email" class="form-control" value="@_email"
+                                   @onchange="@(e => _email = e.Value?.ToString() ?? string.Empty)" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="Password" class="form-control"
+                                   value="@_password"
+                                   @onchange="@(e => _password = e.Value?.ToString() ?? string.Empty)" required />
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">
+                                <span>Login</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
-    string email = "";
-    string password = "";
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private string? _errorMessage;
+    private string? _requestToken;
 
-    private async Task HandleLogin()
+    protected override void OnInitialized()
     {
-        var token = await JS.InvokeAsync<string>("loginWithFirebase", email, password);
-        await Http.PostAsJsonAsync("/api/auth/login", new { IdToken = token });
-        Nav.NavigateTo("/admin", forceLoad: true);
+        if (HttpContextAccessor.HttpContext != null)
+        {
+            var tokens = AntiForgery.GetAndStoreTokens(HttpContextAccessor.HttpContext);
+            _requestToken = tokens.RequestToken;
+        }
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("error", out var errorValue))
+        {
+            _errorMessage = HttpUtility.UrlDecode(errorValue);
+        }
     }
 }
