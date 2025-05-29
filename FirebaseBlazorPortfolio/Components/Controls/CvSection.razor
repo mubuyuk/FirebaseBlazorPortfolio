@@ -1,7 +1,5 @@
-﻿@code {
-    private string activeSection = "edu";
-    private void SetSection(string section) => activeSection = section;
-}
+﻿@rendermode InteractiveServer
+@inject FirestoreService FirestoreService
 
 <section class="cv-section text-white">
     <div class="container">
@@ -58,9 +56,16 @@
                     <h2 class="display-6 fw-bold text-success mt-5 mb-4">
                         <i class="fas fa-code me-2"></i>Tekniker & Verktyg
                     </h2>
-                    <p class="text-white-50 small">
-                        C# · .NET · Blazor · MSSQL · MongoDB · Git · Visual Studio 2022 · Azure · CI/CD · Azure DevOps · HTML · CSS · MS Paint
-                    </p>
+                    <div class="row row-cols-3 row-cols-sm-4 row-cols-md-6 g-3 mt-2">
+                        @foreach (var tech in technologies)
+                        {
+                            <div class="col text-center">
+                                <img src="@tech.IconPath" alt="@tech.Name" class="img-fluid mb-2" style="max-height: 50px;" />
+                                <div class="small text-white-50">@tech.Name</div>
+                            </div>
+                        }
+                    </div>
+
                 </div>
             }
 
@@ -128,3 +133,43 @@
         </div>
     </div>
 </section>
+
+
+@code {
+    private string activeSection = "edu";
+    private void SetSection(string section) => activeSection = section;
+
+
+    private List<TechIcon> technologies = new()
+{
+    new TechIcon("C#", "images/icons/csharp.svg"),
+    new TechIcon(".NET", "images/icons/dotnet.svg"),
+    new TechIcon("Blazor", "images/icons/blazor.svg"),
+    new TechIcon("Bootstrap", "images/icons/bootstrap.svg"),
+    new TechIcon("SQL Server", "images/icons/mssql.svg"),
+    new TechIcon("MongoDB", "images/icons/mongodb.svg"),
+    new TechIcon("Azure", "images/icons/azure.svg"),
+    new TechIcon("Docker", "images/icons/docker.svg"),
+    new TechIcon("Kubernetes", "images/icons/kubernetes.svg"),
+    new TechIcon("Terraform", "images/icons/terraform.svg"),
+    new TechIcon("Azure DevOps", "images/icons/devops.svg"),
+    new TechIcon("Git", "images/icons/git.svg"),
+    new TechIcon("Visual Studio", "images/icons/visualstudio.svg"),
+    new TechIcon("HTML", "images/icons/html.svg"),
+    new TechIcon("CSS", "images/icons/css.svg"),
+    new TechIcon("MS Paint", "images/icons/mspaint.svg")
+};
+
+    private class TechIcon
+    {
+        public string Name { get; set; }
+        public string IconPath { get; set; }
+
+        public TechIcon(string name, string iconPath)
+        {
+            Name = name;
+            IconPath = iconPath;
+        }
+    }
+
+}

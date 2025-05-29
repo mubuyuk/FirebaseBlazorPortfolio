@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using FirebaseBlazorPortfolio.Services;
 using Firebase.Auth;
-using Firebase.Auth.Providers;
 
 namespace FirebaseBlazorPortfolio.Components.Controllers
 {
@@ -11,21 +9,15 @@ namespace FirebaseBlazorPortfolio.Components.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly FirebaseAuthClient _firebaseAuthClient;
+        private readonly FirebaseAuthService _firebaseAuthService;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IConfiguration config, ILogger<AuthController> logger)
+        public AuthController(
+            FirebaseAuthService firebaseAuthService,
+            ILogger<AuthController> logger)
         {
+            _firebaseAuthService = firebaseAuthService;
             _logger = logger;
-
-            var authConfig = new FirebaseAuthConfig
-            {
-                ApiKey = config["Firebase:ApiKey"],
-                AuthDomain = config["Firebase:AuthDomain"],
-                Providers = [new EmailProvider()]
-            };
-
-            _firebaseAuthClient = new FirebaseAuthClient(authConfig);
         }
 
         [HttpPost("login")]
@@ -33,40 +25,24 @@ namespace FirebaseBlazorPortfolio.Components.Controllers
         {
             try
             {
-                var result = await _firebaseAuthClient.SignInWithEmailAndPasswordAsync(
-                    credentials.Email, credentials.Password);
-                var token = await result.User.GetIdTokenAsync();
+                var success = await _firebaseAuthService.SignInAsync(credentials.Email, credentials.Password);
 
-                _logger.LogInformation("Firebase login successful: UID={Uid}, Email={Email}",
-                    result.User.Uid, result.User.Info.Email);
-
-                var claims = new List<Claim>
+                if (!success)
                 {
-                    new(ClaimTypes.NameIdentifier, result.User.Uid),
-                    new(ClaimTypes.Email, result.User.Info.Email),
-                    new("FirebaseToken", token)
-                };
+                    return Unauthorized("Felaktig e-post eller lösenord.");
+                }
 
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
-                    new AuthenticationProperties
-                    {
-                        IsPersistent = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
-                    });
-
+                _logger.LogInformation("Inloggning lyckades för {Email}", credentials.Email);
                 return Redirect("/admin");
             }
             catch (FirebaseAuthException ex)
             {
-                _logger.LogWarning(ex, "Login failed");
+                _logger.LogWarning(ex, "Firebase-autentisering misslyckades");
                 return Unauthorized("Felaktig e-post eller lösenord.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error during login");
+                _logger.LogError(ex, "Ett oväntat fel uppstod vid inloggning");
                 return StatusCode(500, "Ett internt fel inträffade.");
             }
         }
@@ -74,7 +50,7 @@ namespace FirebaseBlazorPortfolio.Components.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _firebaseAuthService.LogoutAsync();
             _logger.LogInformation("Användaren har loggats ut.");
             return Ok();
         }

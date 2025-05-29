@@ -1,11 +1,23 @@
-﻿
-@rendermode InteractiveServer
-
-<div class="card text-center p-3 h-100 shadow-sm">
-    <img src="@Skill.ImageUrl" class="card-img-top mx-auto" style="width: 60px; height: 60px;" alt="@Skill.TechName" />
-    <div class="card-body">
-        <h6 class="card-title">@Skill.TechName</h6>
+﻿<div class="project-card d-flex flex-column text-white">
+    <div class="project-image-container mb-3">
+        @if (!string.IsNullOrWhiteSpace(Skill.ImageUrl))
+        {
+            <img src="@Skill.ImageUrl" class="img-fluid rounded" alt="@Skill.TechName" />
+        }
+        else
+        {
+            <div class="no-image-placeholder d-flex align-items-center justify-content-center">
+                <i class="fas fa-tools fa-2x text-muted"></i>
+            </div>
+        }
     </div>
+
+    <h6 class="project-title text-white text-center">@Skill.TechName</h6>
+
+    @if (!string.IsNullOrWhiteSpace(Skill.Category))
+    {
+        <span class="badge bg-success align-self-center mt-2">@Skill.Category</span>
+    }
 </div>
 
 @code {

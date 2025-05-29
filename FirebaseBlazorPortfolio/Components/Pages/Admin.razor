@@ -215,7 +215,11 @@
 
     private async Task Logout()
     {
-        await Http.PostAsync("/api/auth/logout", null);
-        Navigation.NavigateTo("/login", true);
+        var response = await Http.PostAsync("/api/auth/logout", new StringContent(""));
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+
     }
 }

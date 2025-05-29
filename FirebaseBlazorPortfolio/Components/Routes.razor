@@ -1,7 +1,21 @@
-﻿<CascadingAuthenticationState>
+﻿@using FirebaseBlazorPortfolio.Components.Controllers
+@using Microsoft.AspNetCore.Components.Authorization
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+                <NotAuthorized>
+                    @if (!(context?.User?.Identity?.IsAuthenticated ?? false))
+                    {
+                        <RedirectToLogin />
+                    }
+                    else
+                    {
+                        <p class="text-danger">⛔ Du har inte behörighet att se denna sida.</p>
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
@@ -11,3 +25,4 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+

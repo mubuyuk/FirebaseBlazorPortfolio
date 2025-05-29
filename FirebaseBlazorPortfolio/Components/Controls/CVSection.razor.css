@@ -1,4 +1,9 @@
-﻿.btn-outline-success.active {
+﻿/*body {
+    font-family: Calibri;
+    font-size: 24px;
+}*/
+
+.btn-outline-success.active {
     background-color: #198754;
     color: white;
     border-color: #198754;
